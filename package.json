@@ -1,0 +1,30 @@
+{
+  "name": "yuso-mobile-native",
+  "version": "1.0.0",
+  "description": "connect h5 to android and ios",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup --watch --config rollup.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "middleware"
+  ],
+  "author": "john.gao",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-license": "^0.8.1"
+  },
+  "dependencies": {
+    "rollup": "^1.10.1",
+    "rollup-plugin-uglify": "^6.0.2"
+  }
+}
