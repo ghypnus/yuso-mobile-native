@@ -7,7 +7,7 @@ import DdUI from '../ding-talk/dd-ui/index'
 import WeCore from '../wechat/index'
 import LxCore from '../lanxin/index'
 import MapCore from '../a-map/index'
-import {isEmptyObject } from '../_utils/base_util'
+import { isEmptyObject } from '../_utils/base_util'
 import { v4 } from 'uuid'
 
 /**
@@ -87,7 +87,7 @@ const Native = {
   isNativeIos() {
     return _isNativeIos()
   },
-  
+
   /**
    * 获取标题栏和导航栏加载方式
    * @param type 导航显示类型
@@ -150,10 +150,34 @@ const Native = {
     }
   },
   /**
+   * json转字符串
+   * @param val
+   * @returns {string}
+   */
+  stringify(val) {
+    return val === undefined || val === null || typeof val === "function" ? val + "" : JSON.stringify(val);
+  },
+  /**
+   * 字符串转json
+   * @param val
+   * @returns {*}
+   */
+  deserialize(val) {
+    if (typeof val !== "string") {
+      return undefined;
+    }
+    try {
+      return JSON.parse(val);
+    } catch (e) {
+      return val || undefined;
+    }
+  },
+  /**
    * 获取缓存值
    * @param {String} key 
    */
   getCache(key, callback) {
+    if (!key) return;
     let result = '';
     switch (this.OS.type) {
       case 'android':
@@ -169,7 +193,7 @@ const Native = {
         result = window.localStorage.getItem(key);
         break;
     }
-    return result;
+    return this.deserialize(result);
   },
   /**
    * 设置缓存值
@@ -177,16 +201,18 @@ const Native = {
    * @param {Any} value 
    */
   setCache(key, value) {
+    if (!key) return;
+    let val = this.stringify(value);
     switch (this.OS.type) {
       case 'android':
         this.callNative({
           method: 'setCache',
           key: key,
-          value: value
+          value: val
         });
         break;
       default:
-        window.localStorage.setItem(key, value);
+        window.localStorage.setItem(key, val);
         break;
     }
   },
@@ -201,6 +227,16 @@ const Native = {
       default:
         window.localStorage.removeItem(key);
         break;
+    }
+  },
+    /**
+   * 清除缓存
+   * @param prefix
+   */
+  clearCache(excList = []) {
+    for (var i = window.localStorage.length - 1; i >= 0; i--) {
+      var k = window.localStorage.key(i);
+      if (excList.indexOf(k) == -1) this.removeCache(k);
     }
   },
   /**
@@ -349,7 +385,7 @@ const Native = {
    */
   callFront(callbackKey, json) {
     var result = JSON.parse(json);
-    if(this.callbackMap.has(callbackKey)){
+    if (this.callbackMap.has(callbackKey)) {
       this.callbackMap.get(callbackKey)(result);
       this.callbackMap.delete(callbackKey);
     }
