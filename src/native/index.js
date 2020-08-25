@@ -385,6 +385,7 @@ const Native = {
    */
   callFront(callbackKey, json) {
     var result = JSON.parse(json);
+    alert(callbackKey, result, JSON.stringify(this.callbackMap))
     if (this.callbackMap.has(callbackKey)) {
       this.callbackMap.get(callbackKey)(result);
       this.callbackMap.delete(callbackKey);
