@@ -1,6 +1,6 @@
 {
   "name": "yuso-mobile-native",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "connect h5 to android and ios",
   "main": "index.js",
   "scripts": {

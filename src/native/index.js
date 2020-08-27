@@ -41,6 +41,7 @@ const _isNativeAndroid = () => {
   let isNative = true
   try {
     android.callWithDict(JSON.stringify({
+      _callback_key_: v4(),
       method: 'test'
     }));
   } catch (e) {
@@ -57,6 +58,7 @@ const _isNativeIos = () => {
   let isNative = true;
   try {
     ios.callWithDict({
+      _callback_key_: v4(),
       method: 'test'
     });
   } catch (e) {
@@ -105,6 +107,13 @@ const Native = {
         break;
     }
     return result;
+  },
+  /**
+   * 重新布局
+   * @param {Boolean} visible 键盘显示 
+   */
+  resetLayout(visible) {
+    
   },
   /**
    * 启动页 - 设置钉钉返回按钮
@@ -177,7 +186,6 @@ const Native = {
    * @param {String} key 
    */
   getCache(key, callback) {
-    if (!key) return;
     let result = '';
     switch (this.OS.type) {
       case 'android':
@@ -190,10 +198,18 @@ const Native = {
         })
         break;
       default:
-        result = window.localStorage.getItem(key);
+        if(key) {
+          result = window.localStorage.getItem(key);
+        }else {
+          let obj = {};
+           Object.keys(window.localStorage).map(key=>{
+            obj[key] = this.deserialize(window.localStorage.getItem(key));
+          })
+          result = obj;
+        }
+        if(callback) callback(result)
         break;
     }
-    return this.deserialize(result);
   },
   /**
    * 设置缓存值
@@ -310,10 +326,9 @@ const Native = {
         })
         break;
       default:
-        callback({
-          user: JSON.parse(this.getCache('userInfo')),
-          token: this.getCache('token')
-        });
+        this.getCache(null, val=>{
+          callback(val)
+        })
         break;
     }
   },
@@ -385,7 +400,6 @@ const Native = {
    */
   callFront(callbackKey, json) {
     var result = JSON.parse(json);
-    alert(callbackKey, result, JSON.stringify(this.callbackMap))
     if (this.callbackMap.has(callbackKey)) {
       this.callbackMap.get(callbackKey)(result);
       this.callbackMap.delete(callbackKey);
@@ -514,9 +528,10 @@ const Native = {
         })
         break;
       case 'wechat':
-        let openId = this.getCache('openId');
-        json.device = openId
-        callback && callback(json)
+        this.getCache('openId', openId=>{
+          json.device = openId
+          callback && callback(json)
+        });
         break;
       case 'lanxin':
         callback && callback({
