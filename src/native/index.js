@@ -113,7 +113,7 @@ const Native = {
    * @param {Boolean} visible 键盘显示 
    */
   resetLayout(visible) {
-    
+
   },
   /**
    * 启动页 - 设置钉钉返回按钮
@@ -198,16 +198,16 @@ const Native = {
         })
         break;
       default:
-        if(key) {
+        if (key) {
           result = window.localStorage.getItem(key);
-        }else {
+        } else {
           let obj = {};
-           Object.keys(window.localStorage).map(key=>{
+          Object.keys(window.localStorage).map(key => {
             obj[key] = this.deserialize(window.localStorage.getItem(key));
           })
           result = obj;
         }
-        if(callback) callback(result)
+        if (callback) callback(result)
         break;
     }
   },
@@ -245,10 +245,10 @@ const Native = {
         break;
     }
   },
-    /**
-   * 清除缓存
-   * @param prefix
-   */
+  /**
+ * 清除缓存
+ * @param prefix
+ */
   clearCache(excList = []) {
     for (var i = window.localStorage.length - 1; i >= 0; i--) {
       var k = window.localStorage.key(i);
@@ -326,7 +326,7 @@ const Native = {
         })
         break;
       default:
-        this.getCache(null, val=>{
+        this.getCache(null, val => {
           callback(val)
         })
         break;
@@ -528,7 +528,7 @@ const Native = {
         })
         break;
       case 'wechat':
-        this.getCache('openId', openId=>{
+        this.getCache('openId', openId => {
           json.device = openId
           callback && callback(json)
         });
@@ -660,6 +660,28 @@ const Native = {
             }
             json.mac = arr.join(':');
           }
+          if (callback) callback(json);
+        });
+        break;
+      default:
+        break;
+    }
+  },
+
+  /**
+   * 支付宝支付
+   * @param  {Func} callback 回调函数
+   */
+  aliPay({ orderInfo = ''}, callback) {
+    switch (this.OS.type) {
+      case 'wechat':
+        break;
+      case 'android':
+      case 'ios':
+        this.callNative({
+          method: 'aliPay',
+          orderInfo: orderInfo,
+        }, (json) => {
           if (callback) callback(json);
         });
         break;
